@@ -1,7 +1,7 @@
 # B-Line Poison
 
 ⚠️ **Disclaimer**  
-This project demonstrates ARP scanning and poisoning (MITM)techniques using Python and Scapy.  
+This project demonstrates ARP scanning and poisoning (MITM) techniques using Python and Scapy.  
 It is provided **strictly for educational and research purposes only**.  
 Do not use it on networks without **explicit authorization**.  
 The author is not responsible for any misuse of this tool.
@@ -30,3 +30,4 @@ Install with:
 ```bash
 
 pip install -r requirements.txt
+
