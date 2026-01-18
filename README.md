@@ -1,6 +1,6 @@
 # B-Line Poison
 
-⚠️ **Disclaimer**  
+**Disclaimer**  
 This project demonstrates ARP scanning and poisoning (MITM) techniques using Python and Scapy.  
 It is provided **strictly for educational and research purposes only**.  
 Do not use it on networks without **explicit authorization**.  
@@ -8,7 +8,7 @@ The author is not responsible for any misuse of this tool.
 
 ---
 
-## ✨ Features
+##  Features
 - Detects local network subnet automatically.
 - Performs ARP scans to discover devices (IP, MAC, Hostname).
 - Demonstrates ARP packet crafting for educational purposes.
@@ -16,7 +16,7 @@ The author is not responsible for any misuse of this tool.
 
 ---
 
-## 📦 Requirements
+##  Requirements
 See [requirements.txt](requirements.txt) for the full list.  
 Key dependencies:
 - scapy  
