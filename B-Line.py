@@ -22,8 +22,21 @@ import ipaddress
 console = Console()
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
+_BAD_IFACE_PREFIXES = ("lo", "docker", "br-", "veth", "virbr", "vboxnet", "vmnet", "zt", "wg")
+
+#avoid virtual/loopback interfaces unless unless needed
+def _iface_score(name: str) -> int:
+    if name.startswith(_BAD_IFACE_PREFIXES):
+        return 0
+
+    if name.startswith(("eth", "en", "wlan", "wl")):
+        return 3
+    return 1
 
 
+#----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------------
 #find network's subnet
 def get_lan_subnet():
     for iface in netifaces.interfaces():
@@ -47,15 +60,28 @@ def get_mac(ip):
     broadcast = Ether(dst="ff:ff:ff:ff:ff:ff")
     arp_packet = broadcast / arp_req
     answered, _ = srp(arp_packet, timeout = 2, verbose = 0)
+    devices = []
     for sent, recieved in answered:
-        return recieved.hwsrc
+        add_device = f"'ip': {recieved.psrc}, 'mac': {recieved.hwsrc}"
+        devices.append(add_device)
+        
+        
     return None
 
+    print(len(devices))
 
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
+#hostname resolver
+def resolve_hostname(ip):
+    try:
+        socket.gethostbyaddr(ip)
+    
+    except Exception as e:
+        return None
 
+#----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #ARP Request Scan
 def arp_scan():
@@ -105,13 +131,31 @@ def arp_scan():
 
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
+# devices table
 
+# def render_devices_table(devices):
+    table = Table("Discovered Devices")
+
+    table.add_column("IP", style="green")
+    table.add_column("MAC", style= "green")
+    table.add_column("Hostname", style="bold green")
+
+    for device in devices:
+        ip = device.get("ip", "-")
+        mac = device.get("mac", "-")
+        hostname = device.get("hostname", "-")
+        table.add_row(ip, mac, hostname)
+
+    console.print(table)
+        
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 #ARP Poisoning Function for Target Only
 def arp_poison(target_ip, router_ip, router_mac):
 
-      #automatically inserted target mac variabke
+    #automatically inserted target mac variabke
     
     target_mac = get_mac(target_ip)
     if not target_mac:
