@@ -1,4 +1,4 @@
-from scapy.all import IP, ARP, Ether, srp, sendp, conf, get_if_list, TCP, RandShort, RandIP, UDP, RandMAC
+from scapy.all import Ether, srp, sendp, conf, get_if_list, TCP, RandShort, RandIP, UDP, RandMAC
 import ipaddress, socket, time
 from rich.console import Console
 from rich.table import Table
