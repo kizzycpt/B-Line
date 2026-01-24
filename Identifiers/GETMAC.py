@@ -21,10 +21,9 @@ def get_mac(ip):
     arp_packet = broadcast/arp_req
 
     #Reply loop for ARP Request
-    answered, _ = srp(arp_packet, timeout = 2, verbose = 1)
+    answered, _ = srp(arp_packet, timeout = 2, verbose = 0)
     for sent, received in answered:
         return received.hwsrc
-        print(received.hwsrc)
 
     return None
 
