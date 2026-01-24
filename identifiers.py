@@ -26,6 +26,5 @@ def get_mac(ip):
         return received.hwsrc
         print(received.hwsrc)
 
-    return "No Reply"
-
+    return None
 
