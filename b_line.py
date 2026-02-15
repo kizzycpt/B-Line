@@ -8,6 +8,9 @@ import pyfiglet
 from termcolor import colored
 import netifaces
 import ipaddress
+from Identifiers import GETMAC
+
+
 
 console = Console()
 
@@ -57,7 +60,7 @@ if __name__ == "__main__":
             console.print(f"[red]\n{arp_poison_text}\n")
             console.print("[yellow]------------------------------------------------------------ \n")
             target_ip = console.input("[yellow]| Enter Target IP:")
-            ROUTER_INFO = arp_scan()
+            ROUTER_INFO = get_mac()
             if ROUTER_INFO:
                 router_ip, router_mac = ROUTER_INFO
                 arp_poison(target_ip=target_ip, router_ip=ROUTER_INFO[0],router_mac=ROUTER_INFO[1])
