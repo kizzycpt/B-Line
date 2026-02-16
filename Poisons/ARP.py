@@ -17,7 +17,7 @@ import pyfiglet
 from termcolor import colored
 import netifaces
 import ipaddress
-from GETMAC import get_mac
+from Identifiers import arpscan 
 #variables in the rich library
 
 
