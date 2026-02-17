@@ -5,7 +5,6 @@ Unauthorized use on networks you do not own or have explicit permission to test
 may violate the law. The author is not responsible for misuse.
 """
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
-#ARP Poison function
 #Imports
 from scapy.all import IP, ARP, Ether, srp, sendp, conf, get_if_list, TCP, RandShort, RandIP, UDP, RandMAC
 import ipaddress, socket, time
@@ -50,7 +49,7 @@ def arp_poison(target_ip, router_ip, router_mac):
             time.sleep(2)
 
 
-            console.print("[green]ARP Poisoning packets sent successfully.\n")
+            console.print("[green]ARP Interception\n")
             console.print("[blue]ARP Poisoning completed. Press Ctrl+C to stop.")
     except Exception as e:
         console.print("[Red] Failed to Send Poisoning Packets. Please Try Again. \n")
