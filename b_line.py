@@ -8,11 +8,13 @@ import pyfiglet
 from termcolor import colored
 import netifaces
 import ipaddress
-from Identifiers import arpscan, gatewayscan
-from Poisons import ARP
+from identifiers.mac import get_mac, get_my_mac
+from identifiers.gateway import gateway_info
+from poisons.ARP import arp_poison
 
 
 console = Console()
+gatewayscan = gateway_info()
 
 #MAIN Execution
 
@@ -60,7 +62,7 @@ if __name__ == "__main__":
             console.print(f"[red]\n{arp_poison_text}\n")
             console.print("[yellow]------------------------------------------------------------ \n")
             target_ip = console.input("[yellow]| Enter Target IP:")
-            ROUTER_INFO = gatewayscan.gateway_info
+            ROUTER_INFO = gateway_info()
             if ROUTER_INFO:
                 router_ip, router_mac = ROUTER_INFO
                 ARP.arp_poison(target_ip=target_ip, router_ip=ROUTER_INFO[0],router_mac=ROUTER_INFO[1])

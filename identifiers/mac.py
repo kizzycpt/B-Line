@@ -9,6 +9,9 @@ from termcolor import colored
 import netifaces
 import ipaddress
 
+#Unwanted interface prefixes
+bad_iface_prefixes = ("lo", "docker", "wg", "br-", "veth", "virbr", "zt", "vboxnet")
+
 
 
 def get_mac(ip):
@@ -26,4 +29,27 @@ def get_mac(ip):
         return received.hwsrc
 
     return None
+
+
+def get_my_mac():
+    try:
+        for iface in netifaces.interfaces():
+            if iface.startswith(bad_iface_prefixes):
+                continue
+            
+        addrs = netifaces.ifaddresses()
+
+        iface_link = addrs.get(netifaces.AF_LINK)
+        
+
+        my_mac = iface_link[0].get("addrs")
+        if my_mac and my_mac != "00:00:00:00:00:00":
+            return {"Interface": iface, "MAC": my_mac}
+
+
+
+    except Exception as e:
+        print(f"Error in resolving MAC Address. {e}.")
+        return {}
+
 

