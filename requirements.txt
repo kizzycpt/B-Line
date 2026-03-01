@@ -4,3 +4,6 @@ pyfiglet
 termcolor
 netifaces
 requests
+
+# source .venv/bin/activate
+# sudo setcap cap_net_raw,cap_net_admin=eip /usr/bin/python3.

@@ -37,19 +37,20 @@ def get_my_mac():
             if iface.startswith(bad_iface_prefixes):
                 continue
             
-        addrs = netifaces.ifaddresses()
+            addrs = netifaces.ifaddresses(iface)
+            iface_link = addrs.get(netifaces.AF_LINK)
+            
+            if not iface_link:
+                continue
 
-        iface_link = addrs.get(netifaces.AF_LINK)
-        
-
-        my_mac = iface_link[0].get("addrs")
-        if my_mac and my_mac != "00:00:00:00:00:00":
-            return {"Interface": iface, "MAC": my_mac}
-
+            my_mac = iface_link[0].get("addr")
+            if my_mac and my_mac != "00:00:00:00:00:00":
+                return {"Interface": iface, "MAC": my_mac}
+        return None
 
 
     except Exception as e:
         print(f"Error in resolving MAC Address. {e}.")
         return {}
-
+ 
 
