@@ -49,8 +49,8 @@ if __name__ == "__main__":
 
     while True:
         console.print(f"[red]{title_text}")
-        console.print("[bold green]Welcome to the B-Line Poison Tool! \n")
-        console.print("[yellow]This tool allows you to perform network scans through ARP Requests and ARP Poison Attacks.\n")
+        console.print("[bold green]Welcome to the Alchemy Poison Tool! \n")
+        console.print("[yellow]This tool allows you to perform network scans through Requests and execute Poison (MITM) Attacks.\n")
         console.print("[red]Please ensure you have the necessary permissions/dependencies to use this tool.\n")
         choice = console.input("\n[yellow]Please Select: \n"
         "ARP Poison: [1] \n"
