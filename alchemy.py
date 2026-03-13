@@ -9,7 +9,7 @@ from termcolor import colored
 import netifaces
 import ipaddress
 from identifiers.mac import get_mac, get_my_mac
-from identifiers.gateway import gateway_info, arp_router_mac
+from identifiers.gateway import gateway_info
 from poisons.ARP import arp_cache_poison, arp_vlan_poison, arp_monitor_callback
 
 
@@ -68,13 +68,8 @@ if __name__ == "__main__":
             arp_type = console.input("[yellow]Classic Cache Poison [1] \nVlan Cache Poison [2] \nPlease Select: ")
 
             if arp_type == "1":
-
-                target_ip = console.input("[yellow]| Enter Target IP:")
-                if ROUTER_INFO:
-                    arp_cache_poison()
-                else: 
-                    console.print("[red] Necessary Information is not available. Cannot proceed with poisoning.")
-
+                arp_cache_poison()
+                
             elif arp_type == "2":
                 arp_vlan_poison()
             else:

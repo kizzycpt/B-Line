@@ -15,27 +15,8 @@ addr  = ip_info["addr"]
 mask = ip_info["netmask"]
 subnet = ipaddress.IPv4Network(f"{addr}/{mask}", strict = False)
 
-#ARP Packet Formula
-arp_req = ARP(pdst = subnet)
-broadcast = Ether(dst="ff:ff:ff:ff:ff:ff")
-arp_packet = broadcast/arp_req
 
 
-#Packet Deployment
-result = srp(arp_packet, timeout=2, verbose=0)[0]
-
-
-
-#MAC variables 
-def node_id():
-    hosts: dict[str, str] = {}
-    for _, received in result:
-        if not quiet:
-            print(f"[+] Host found: {received.psrc} - MAC: {received.hwsrc}")
-        hosts[received.psrc] = received.hwsrc
-    return hosts
-hosts = node_id()
-router_mac = hosts.get(gateway_info()["Gateway"])
 
 
 
